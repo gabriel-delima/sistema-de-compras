@@ -1,33 +1,16 @@
-from flask import  request, Blueprint, jsonify
+from flask import  request, jsonify
+from flask.views import MethodView
 from app.carrinho.model import Carrinhos
 from app.extensions import db
+from app.carrinho.auxiliar import testar_entradas_carrinho
 
 
-def testar_entradas(valor_frete,valor_total,usuario_id):
-    if ( not(isinstance(valor_frete,int)) or 
-         not(isinstance(valor_total,int)) ):
-
-        return{"error":"Algum tipo inválido"},400
-        
-    if ((valor_frete < 0) or 
-        (valor_total < 0)):
-
-        return{"error":"Os valores devem ser maiores que 0"},400
-        
-    if (usuario_id != None) and (not(isinstance(usuario_id,int)) or (usuario_id<0)) :
-        return{"error": "usuario_id deve ser inteiro positivo"}
-    return False
-
-
-carrinho_api = Blueprint('carrinho_api', __name__)
-
-@carrinho_api.route('/carrinhos',methods = ['GET','POST'])
-def index():
-    if request.method == "GET":
+class CarrinhoDetails(MethodView):      # /carrinhos
+    def get(self):
         carrinhos = Carrinhos.query.all()
         return jsonify([carrinho.json() for carrinho in carrinhos]),200
 
-    if request.method == "POST":
+    def post(self):
         dados = request.json        
         valor_frete = dados.get('valor_frete')
         valor_total = dados.get('valor_total')
@@ -38,7 +21,7 @@ def index():
         if valor_total == None:
             valor_total = 0
 
-        error = testar_entradas(valor_frete,valor_total,usuario_id)
+        error = testar_entradas_carrinho(valor_frete,valor_total,usuario_id)
         if (error != False):
             return error
         
@@ -49,15 +32,13 @@ def index():
 
         return carrinho.json() , 200
 
-@carrinho_api.route('/carrinhos/<int:id>',methods = ['GET','PUT','PATCH','DELETE'])
-def pagina_carrinho(id):
-
-    carrinho = Carrinhos.query.get_or_404(id)
-
-    if request.method == "GET":
+class PaginaCarrinhos(MethodView):      # /carrinhos/<int:id>
+    def get(self,id):
+        carrinho = Carrinhos.query.get_or_404(id)
         return carrinho.json(),200
-    
-    if request.method =='PUT':
+
+    def put(self,id):
+        carrinho = Carrinhos.query.get_or_404(id)
         dados = request.json      
         valor_frete = dados.get('valor_frete')
         valor_total = dados.get('valor_total')
@@ -67,7 +48,7 @@ def pagina_carrinho(id):
             valor_frete = 0
         if valor_total == None:
             valor_total = 0
-        error = testar_entradas(valor_frete,valor_total)
+        error = testar_entradas_carrinho(valor_frete,valor_total,usuario_id)
         if (error != False):
             return error
         
@@ -78,14 +59,15 @@ def pagina_carrinho(id):
         db.session.commit()
         return carrinho.json() , 200
 
-    if request.method == "PATCH":
+    def patch(self,id):
+        carrinho = Carrinhos.query.get_or_404(id)
         dados = request.json        
 
         valor_frete = dados.get('valor_frete', carrinho.valor_frete)
         valor_total = dados.get('valor_total', carrinho.valor_total)
         usuario_id = dados.get('usuario_id', carrinho.usuario_id)
 
-        error = testar_entradas(valor_frete,valor_total,usuario_id)
+        error = testar_entradas_carrinho(valor_frete,valor_total,usuario_id)
         if (error != False):
             return error
 
@@ -95,8 +77,10 @@ def pagina_carrinho(id):
 
         db.session.commit()
         return carrinho.json() , 200
-    
-    if request.method =='DELETE':
+
+    def delete(self,id):
+        carrinho = Carrinhos.query.get_or_404(id)
         db.session.delete(carrinho)
         db.session.commit()
         return carrinho.json(), 200
+

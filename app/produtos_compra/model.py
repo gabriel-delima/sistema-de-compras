@@ -5,8 +5,8 @@ class ProdutosCompra(db.Model):
     __tablename__ = 'produtos_compra'
     id = db.Column(db.Integer, primary_key = True)
     quantidade = db.Column(db.Integer, nullable = False)
-    valor_unitario = db.Column(db.Integer, primary_key = True)
-    valor_total = db.Column(db.Integer, primary_key = True)
+    valor_unitario = db.Column(db.Integer, nullable = False)
+    valor_total = db.Column(db.Integer, nullable = False)
 
     # pedidos(many) <-> produtos_compra(many)
     pedidos = db.relationship('Pedidos', secondary=association_pedidos_produtos_compra , backref='pedido_produto_compra')

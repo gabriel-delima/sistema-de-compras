@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 2b447c31d73b
+Revision ID: f82b5231011f
 Revises: 
-Create Date: 2021-02-09 23:33:00.725252
+Create Date: 2021-02-11 23:52:31.307551
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '2b447c31d73b'
+revision = 'f82b5231011f'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -38,7 +38,7 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('nome', sa.String(length=50), nullable=False),
     sa.Column('email', sa.String(length=50), nullable=False),
-    sa.Column('senha', sa.String(length=20), nullable=False),
+    sa.Column('senha_hash', sa.String(length=200), nullable=False),
     sa.Column('cpf', sa.Integer(), nullable=False),
     sa.Column('nascimento', sa.String(length=10), nullable=False),
     sa.Column('telefone', sa.Integer(), nullable=False),
@@ -52,12 +52,12 @@ def upgrade():
     op.create_table('enderecos',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('cep', sa.Integer(), nullable=False),
-    sa.Column('logadouro', sa.String(length=30), nullable=False),
+    sa.Column('logadouro', sa.String(length=50), nullable=False),
     sa.Column('numero', sa.Integer(), nullable=False),
     sa.Column('complemento', sa.String(length=100), nullable=True),
-    sa.Column('bairro', sa.String(length=20), nullable=False),
-    sa.Column('cidade', sa.String(length=20), nullable=False),
-    sa.Column('estado', sa.String(length=20), nullable=False),
+    sa.Column('bairro', sa.String(length=50), nullable=False),
+    sa.Column('cidade', sa.String(length=50), nullable=False),
+    sa.Column('estado', sa.String(length=50), nullable=False),
     sa.Column('usuario_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['usuario_id'], ['usuarios.id'], ),
     sa.PrimaryKeyConstraint('id')
@@ -77,7 +77,7 @@ def upgrade():
     sa.Column('valor_total', sa.Integer(), nullable=False),
     sa.Column('produto_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['produto_id'], ['produtos.id'], ),
-    sa.PrimaryKeyConstraint('id', 'valor_unitario', 'valor_total')
+    sa.PrimaryKeyConstraint('id')
     )
     op.create_table('association_carrinhos_produtos_compra',
     sa.Column('produtos_compra', sa.Integer(), nullable=True),
