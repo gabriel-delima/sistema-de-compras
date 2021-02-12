@@ -23,10 +23,10 @@ class Usuarios(db.Model):
     def json(self):
         return{
             'nome':self.nome,
-            'email':self.email,
-            'cpf':self.cpf,
-            'nascimento':self.nascimento,
-            'telefone':self.telefone,
-            'telefone_opicional':self.telefone_opicional,
+#            'email':self.email,
+#            'cpf':self.cpf,
+#            'nascimento':self.nascimento,
+#            'telefone':self.telefone,
+#            'telefone_opicional':self.telefone_opicional,
             'carrinho_id':self.carrinho_id
         }
